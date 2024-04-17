@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Alquileres</h1>
+        <p>Calcula tu precio</p>
+        <form action="">
+            <div class="input">
+                <label>Metros cuadrados</label>
+                <input type="number" name="m2" id="m2" min="0">
+            </div>
+            <div class="input">
+                <label>nº habitaciones</label>
+                <input type="number" name="num" id="habitaciones" min="0">
+            </div>
+            <div class="input">
+                <label>nº planta</label>
+                <input type="number" name="num" id="planta" min="0">
+            </div>
+            <div class="input">
+                <label>Distrito/Zona</label>
+                <select id="distrito">
+                    <option disabled selected>Elige una opcion</option>
+                    <option value="0">Crabanchel</option>
+                    <option value="1">Vallecas</option>
+                    <option value="2">Usera</option>
+                    <option value="3">Arganzuela</option>
+                    <option value="4">Latina</option>
+                    <option value="5">Ciudad Lineal</option>
+                    <option value="6">Castellana</option>
+                    <option value="7">Retiro</option>
+                    <option value="8">Goya</option>
+                </select>
+            </div>
+            <div class="input">
+                <label>Ascensor</label>
+                <select id="ascensor">
+                    <option disabled selected>Elige una opcion</option>
+                    <option value="0">No</option>
+                    <option value="1">Si</option>
+                </select>
+            </div>
+            <div class="input">
+                <label>Exterior</label>
+                <select id="exterior">
+                    <option disabled selected>Elige una opcion</option>
+                    <option value="0">No</option>
+                    <option value="1">Si</option>
+                </select>
+            </div>
+            <div class="input">
+                <label>Estado</label>
+                <select id="estado">
+                    <option disabled selected>Elige una opcion</option>
+                    <option value="0">No rehabilitado</option>
+                    <option value="1">Rehabilitado</option>
+                    <option value="2">Nuevo</option>
+                </select>
+            </div>
+            <div class="input">
+                <label>Centrico</label>
+                <select id="centro">
+                    <option disabled selected>Elige una opcion</option>
+                    <option value="0">No</option>
+                    <option value="1">Si</option>
+                </select>
+            </div>
+            <div class="input boton">
+                <div>
+                     <button id="boton" type="button">Calcular precio</button>
+                </div>
+                <div class="precio">
+                    <h5 id="resultado"></h5>
+                </div>
+            </div>
+            <div class="input">
+                <button id="boton1" type="button">Vaciar Campos</button>
+            </div>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+
+    <script>
+        var modelo = null;
+        //Cargamos el modelo entrenado
+        (async() =>{
+            console.log("Cargando modelo..."),
+            modelo = await tf.loadLayersModel("model.json")
+            console.log("Modelo cargado...")
+        })();
+
+        const btn = document.getElementById("boton")
+        const btn1= document.getElementById('boton1')
+
+        btn.onclick = () =>{
+            var m2 = document.getElementById('m2').value
+            var habitaciones = document.getElementById('habitaciones').value
+            var planta = document.getElementById('planta').value
+            var ascensor = document.getElementById('ascensor').value
+            var exterior = document.getElementById('exterior').value
+            var estado = document.getElementById('estado').value
+            var centro = document.getElementById('centro').value
+            var distrito = document.getElementById('distrito').value
+            
+            if(modelo != null){
+                var tensor = tf.tensor2d([[parseInt(distrito), parseInt(m2), parseInt(habitaciones), parseInt(planta), parseInt(ascensor), parseInt(exterior), parseInt(estado), parseInt(centro)]])
+                var prediccion = modelo.predict(tensor).dataSync()
+                
+                prediccion = Math.round(prediccion, 2)
+                document.getElementById("resultado").innerHTML = "Precio:" + prediccion + "€/mes"
+            }else{
+                document.getElementById("resultado").innerHTML = "Intentalo de nuevo"
+            }
+        }
+
+        btn1.onclick= () =>{
+
+            var m2 = document.getElementById('m2').value
+            var habitaciones = document.getElementById('habitaciones').value=''
+            var planta = document.getElementById('planta').value=''
+            var ascensor = document.getElementById('ascensor').value=''
+            var exterior = document.getElementById('exterior').value=''
+            var estado = document.getElementById('estado').value=''
+            var centro = document.getElementById('centro').value=''
+            var distrito = document.getElementById('distrito').value=''
+            document.getElementById("resultado").textContent = ''
+        }
+    </script>
+</body>
+</html>
